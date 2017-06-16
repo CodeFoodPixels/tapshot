@@ -1,0 +1,19 @@
+{
+  "name": "tapshot",
+  "version": "1.0.0",
+  "description": "Snapshot assertions for TAP",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lukeb-uk/tapshot.git"
+  },
+  "author": "Luke Bonaccorsi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lukeb-uk/tapshot/issues"
+  },
+  "homepage": "https://github.com/lukeb-uk/tapshot#readme"
+}
