@@ -15,5 +15,13 @@
   "bugs": {
     "url": "https://github.com/lukeb-uk/tapshot/issues"
   },
-  "homepage": "https://github.com/lukeb-uk/tapshot#readme"
+  "homepage": "https://github.com/lukeb-uk/tapshot#readme",
+  "dependencies": {
+    "callsites": "^2.0.0",
+    "mkdirp": "^0.5.1",
+    "pretty-format": "^20.0.3"
+  },
+  "devDependencies": {
+    "tap": "^10.3.4"
+  }
 }
