@@ -1,9 +1,9 @@
 'use strict';
 
-const assert = require(`assert`);
 const path = require(`path`);
 const fs = require(`fs`);
 const callsites = require(`callsites`);
+const isPlainObj = require(`is-plain-obj`);
 const mkdirp = require(`mkdirp`);
 const prettyFormat = require(`pretty-format`);
 
@@ -24,39 +24,33 @@ function saveSnapshot(data, file) {
 }
 
 module.exports = function tapshot(tap, found, options = {}) {
-    assert.ok(
-        typeof tap === `object` || typeof tap === `function`,
-        `tap must either be an object or a function`
-    );
-    assert.ok(
-        typeof tap.equal === `function`,
-        `tap must have the 'equal' assertion method`
-    );
-    assert.ok(
-        typeof tap.pass === `function`,
-        `tap must have the 'pass' assertion method`
-    );
-    assert.ok(
-        typeof options === `object`,
-        `options must be an object`
-    );
+    if (typeof tap !== `object` && typeof tap !== `function`) {
+        throw `tap must either be an object or a function`
+    }
+    if (typeof tap.equal !== `function`) {
+        throw `tap must have the 'equal' assertion method`
+    }
+    if (typeof tap.pass !== `function`) {
+        throw `tap must have the 'pass' assertion method`
+    }
+    if (!isPlainObj(options)) {
+        throw `options must be an object`
+    }
 
     const name = options.name || tap.name;
     const file = options.file || `snapshots/${path.basename(callsites()[1].getFileName())}.snap`;
 
-    assert.ok(
-        typeof name === `string` && name.length > 0,
-        `No name provided, either use this within a named test or set options.name`
-    );
+    if (typeof name !== `string` || name.length === 0) {
+        throw `No name provided, either use this within a named test or set options.name`
+    }
 
     let serializedFound;
 
     if (options.serializer) {
         if (typeof options.serializer === `string`) {
-            assert.ok(
-                found[options.serializer] && typeof value[options.serializer] === `function`,
-                `Method '${options.serializer}' does not exist on provided object`
-            );
+            if (found[options.serializer] && typeof found[options.serializer] !== `function`) {
+                throw `Method '${options.serializer}' does not exist on provided object`
+            }
 
             serializedFound = found[options.serializer]();
         } else if (typeof options.serializer === `function`) {
@@ -65,10 +59,9 @@ module.exports = function tapshot(tap, found, options = {}) {
             throw `Serializer provided to options.serializer must be a funtion or a string with the name of the serializer to be called on the object`;
         }
 
-        assert.ok(
-            typeof serializedFound === `string`,
-            `Serializer provided to options.serializer must produce a string`
-        );
+        if (typeof serializedFound !== `string`) {
+            throw `Serializer provided to options.serializer must produce a string`
+        }
     } else {
         serializedFound = prettyFormat(found);
     }
