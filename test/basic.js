@@ -7,13 +7,17 @@ const sinon = require(`sinon`);
 
 const fixture = fs.readFileSync(`${__dirname}/fixtures/basic.json`, `utf8`);
 
-const tapshot = proxyquire(`../index.js`, {
+const proxies = {
     fs: {
-        readFileSync(fileName) {
-            tap.equal(fileName, `snapshots/basic.js.snap`);
-            return fixture;
-        }
+        readFileSync: sinon.stub().returns(fixture)
     }
+}
+
+const tapshot = proxyquire(`../index.js`, proxies);
+
+tap.beforeEach((done) => {
+    proxies.fs.readFileSync.resetHistory();
+    done();
 });
 
 tap.test(`run with defaults`, (t) => {
@@ -25,6 +29,8 @@ tap.test(`run with defaults`, (t) => {
 
     tapshot(tMock, {mockData: "this is fake data"});
 
+    t.ok(proxies.fs.readFileSync.calledOnce);
+    t.ok(proxies.fs.readFileSync.calledWith(`snapshots/basic.js.snap`));
     t.ok(tMock.equal.calledOnce);
     t.ok(tMock.pass.notCalled);
 
@@ -40,6 +46,8 @@ tap.test(`run with defaults and tap as a function`, (t) => {
 
     tapshot(tMock, {mockData: "this is fake data"});
 
+    t.ok(proxies.fs.readFileSync.calledOnce);
+    t.ok(proxies.fs.readFileSync.calledWith(`snapshots/basic.js.snap`));
     t.ok(tMock.equal.calledOnce);
     t.ok(tMock.pass.notCalled);
 
