@@ -5,18 +5,16 @@ const proxyquire = require(`proxyquire`);
 const fs = require(`fs`);
 const sinon = require(`sinon`);
 
-const fixture = fs.readFileSync(`${__dirname}/fixtures/basic.json`, `utf8`);
+const fixture = require(`${__dirname}/fixtures/basic.js`);
 
 const proxies = {
-    fs: {
-        readFileSync: sinon.stub().returns(fixture)
-    }
+    'import-fresh': sinon.stub().returns(fixture)
 }
 
 const tapshot = proxyquire(`../index.js`, proxies);
 
 tap.beforeEach((done) => {
-    proxies.fs.readFileSync.resetHistory();
+    proxies['import-fresh'].resetHistory();
     done();
 });
 
@@ -62,8 +60,8 @@ tap.test(`runs when tap.name isn't defined but is defined in options`, (t) => {
 
     tapshot(tMock, {mockData: "this is fake data"}, {name:`pass`})
 
-    t.ok(proxies.fs.readFileSync.calledOnce);
-    t.ok(proxies.fs.readFileSync.calledWith(`snapshots/options.js.snap`));
+    t.ok(proxies['import-fresh'].calledOnce);
+    t.ok(proxies['import-fresh'].calledWith(`snapshots/options.js.snap`));
     t.ok(tMock.equal.calledOnce);
     t.ok(tMock.pass.notCalled);
     t.end();
@@ -94,8 +92,8 @@ tap.test(`runs when file is overridden in options`, (t) => {
 
     tapshot(tMock, {mockData: "this is fake data"}, {file:`snapshots/badger.snap`})
 
-    t.ok(proxies.fs.readFileSync.calledOnce);
-    t.ok(proxies.fs.readFileSync.calledWith(`snapshots/badger.snap`));
+    t.ok(proxies['import-fresh'].calledOnce);
+    t.ok(proxies['import-fresh'].calledWith(`snapshots/badger.snap`));
     t.ok(tMock.equal.calledOnce);
     t.ok(tMock.pass.notCalled);
 
@@ -115,8 +113,8 @@ tap.test(`runs when serializer is passed as a function in options`, (t) => {
 
     tapshot(tMock, {mockData: "this is fake data"}, {serializer: serializerStub});
 
-    t.ok(proxies.fs.readFileSync.calledOnce);
-    t.ok(proxies.fs.readFileSync.calledWith(`snapshots/options.js.snap`));
+    t.ok(proxies['import-fresh'].calledOnce);
+    t.ok(proxies['import-fresh'].calledWith(`snapshots/options.js.snap`));
     t.ok(serializerStub.calledOnce);
     t.ok(tMock.equal.calledOnce);
     t.ok(tMock.pass.notCalled);
@@ -140,8 +138,8 @@ tap.test(`runs when serializer is passed as a string in options`, (t) => {
 
     tapshot(tMock, obj, {serializer: 'serialize'});
 
-    t.ok(proxies.fs.readFileSync.calledOnce);
-    t.ok(proxies.fs.readFileSync.calledWith(`snapshots/options.js.snap`));
+    t.ok(proxies['import-fresh'].calledOnce);
+    t.ok(proxies['import-fresh'].calledWith(`snapshots/options.js.snap`));
     t.ok(obj.serialize.calledOnce);
     t.ok(tMock.equal.calledOnce);
     t.ok(tMock.pass.notCalled);
