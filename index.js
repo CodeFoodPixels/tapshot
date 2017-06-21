@@ -80,9 +80,13 @@ module.exports = function tapshot(tap, found, options = {}) {
     try {
         snapshots = importFresh(file);
     } catch (err) {
-        saveSnapshot({[name]: serializedFound}, file);
+        if (err.code === 'MODULE_NOT_FOUND') {
+            saveSnapshot({[name]: serializedFound}, file);
 
-        return tap.pass(`Snapshot file did not exist. Created it at ${file}`);
+            return tap.pass(`Snapshot file did not exist. Created it at ${file}`);
+        }
+
+        throw `Error when loading and parsing the snapshot file at '${file}'. Error given: ${err}`
     }
 
     if (!snapshots[name]) {
