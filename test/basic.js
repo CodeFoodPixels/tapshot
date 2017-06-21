@@ -8,7 +8,7 @@ const sinon = require(`sinon`);
 const fixture = require(`${__dirname}/fixtures/basic.js`);
 
 const proxies = {
-    'import-fresh': sinon.stub().returns(fixture)
+    'import-fresh': sinon.stub().returns(Object.assign({}, fixture))
 }
 
 const tapshot = proxyquire(`../index.js`, proxies);
