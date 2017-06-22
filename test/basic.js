@@ -28,7 +28,7 @@ tap.test(`run with defaults`, (t) => {
     tapshot(tMock, {mockData: "this is fake data"});
 
     t.ok(proxies['import-fresh'].calledOnce);
-    t.ok(proxies['import-fresh'].calledWith(`snapshots/basic.js.snap`));
+    t.ok(proxies['import-fresh'].calledWith(`${__dirname}/snapshots/basic.js.snap`));
     t.ok(tMock.equal.calledOnce);
     t.ok(tMock.pass.notCalled);
 
@@ -45,12 +45,13 @@ tap.test(`run with defaults and tap as a function`, (t) => {
     tapshot(tMock, {mockData: "this is fake data"});
 
     t.ok(proxies['import-fresh'].calledOnce);
-    t.ok(proxies['import-fresh'].calledWith(`snapshots/basic.js.snap`));
+    t.ok(proxies['import-fresh'].calledWith(`${__dirname}/snapshots/basic.js.snap`));
     t.ok(tMock.equal.calledOnce);
     t.ok(tMock.pass.notCalled);
 
     t.end();
 });
+
 
 tap.test(`throws when tap isn't an object or function`, (t) => {
     t.throws(

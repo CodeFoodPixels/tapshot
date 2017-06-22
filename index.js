@@ -47,7 +47,8 @@ module.exports = function tapshot(tap, found, options = {}) {
     }
 
     const name = options.name || tap.name;
-    const file = options.file || `snapshots/${path.basename(callsites()[1].getFileName())}.snap`;
+    const callee = callsites()[1].getFileName();
+    const file = `${path.dirname(callee)}/${(options.file || `snapshots/${path.basename(callee)}.snap`)}`;
 
     if (typeof name !== `string` || name.length === 0) {
         throw `No name provided, either use this within a named test or set options.name`
