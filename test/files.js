@@ -35,8 +35,6 @@ tap.beforeEach((done) => {
 
     proxies.mkdirp.sync.reset();
 
-    process.env.UPDATE_SNAPSHOTS = false;
-
     done();
 });
 
@@ -51,12 +49,6 @@ tap.test(`creates snapshot file and passes when it doesn't exist`, (t) => {
 
     tapshot(tMock, {mockData: "this is fake data"})
 
-    t.ok(proxies['import-fresh'].calledOnce)
-    t.ok(proxies['import-fresh'].calledWith(`${__dirname}/snapshots/files.js.snap`));
-
-    t.ok(proxies.fs.accessSync.calledOnce)
-    t.ok(proxies.fs.accessSync.calledWith(`${__dirname}/snapshots`));
-
     t.ok(proxies.fs.writeFileSync.calledOnce)
     t.ok(proxies.fs.writeFileSync.calledWith(`${__dirname}/snapshots/files.js.snap`, fixtureCode));
 
@@ -64,7 +56,7 @@ tap.test(`creates snapshot file and passes when it doesn't exist`, (t) => {
 
     t.ok(tMock.equal.notCalled);
     t.ok(tMock.pass.calledOnce);
-    debugger;
+
     t.ok(tMock.pass.calledWith(`Snapshot file did not exist. Created it at ${__dirname}/snapshots/files.js.snap`));
     t.end();
 });
@@ -80,12 +72,6 @@ tap.test(`creates snapshot file, directories and passes when they don't exist`, 
     proxies.fs.accessSync.throws(`nope`);
 
     tapshot(tMock, {mockData: "this is fake data"})
-
-    t.ok(proxies['import-fresh'].calledOnce)
-    t.ok(proxies['import-fresh'].calledWith(`${__dirname}/snapshots/files.js.snap`));
-
-    t.ok(proxies.fs.accessSync.calledOnce)
-    t.ok(proxies.fs.accessSync.calledWith(`${__dirname}/snapshots`));
 
     t.ok(proxies.fs.writeFileSync.calledOnce)
     t.ok(proxies.fs.writeFileSync.calledWith(`${__dirname}/snapshots/files.js.snap`, fixtureCode));
@@ -107,12 +93,6 @@ tap.test(`adds snapshot to file if it doesn't exist`, (t) => {
     };
 
     tapshot(tMock, {mockData: "this is more fake data"})
-
-    t.ok(proxies['import-fresh'].calledOnce)
-    t.ok(proxies['import-fresh'].calledWith(`${__dirname}/snapshots/files.js.snap`));
-
-    t.ok(proxies.fs.accessSync.calledOnce)
-    t.ok(proxies.fs.accessSync.calledWith(`${__dirname}/snapshots`));
 
     t.ok(proxies.fs.writeFileSync.calledOnce)
     t.ok(proxies.fs.writeFileSync.calledWith(`${__dirname}/snapshots/files.js.snap`, addFixtureCode));
@@ -141,9 +121,6 @@ tap.test(`throws if there's an error in the snapshot`, (t) => {
         `Error when loading and parsing the snapshot file at '${__dirname}/snapshots/files.js.snap'. Error given: error!`
     );
 
-    t.ok(proxies['import-fresh'].calledOnce)
-    t.ok(proxies['import-fresh'].calledWith(`${__dirname}/snapshots/files.js.snap`));
-
     t.ok(tMock.equal.notCalled);
     t.ok(tMock.pass.notCalled);
     t.end();
@@ -165,12 +142,6 @@ tap.test(`throws if there's an error writing the snapshot file`, (t) => {
         `Error when trying to save the snapshot. Error given: error!`
     );
 
-    t.ok(proxies['import-fresh'].calledOnce);
-    t.ok(proxies['import-fresh'].calledWith(`${__dirname}/snapshots/files.js.snap`));
-
-    t.ok(proxies.fs.accessSync.calledOnce)
-    t.ok(proxies.fs.accessSync.calledWith(`${__dirname}/snapshots`));
-
     t.ok(proxies.fs.writeFileSync.calledOnce)
     t.ok(proxies.fs.writeFileSync.calledWith(`${__dirname}/snapshots/files.js.snap`, saveFailFixtureCode));
 
@@ -181,7 +152,7 @@ tap.test(`throws if there's an error writing the snapshot file`, (t) => {
     t.end();
 });
 
-tap.test(`creates snapshot file and passes when it doesn't exist`, (t) => {
+tap.test(`updates the snapshots if the UPDATE_SNAPSHOTS environment variable is set`, (t) => {
     const tMock = {
         name: `pass`,
         equal: sinon.spy(),
@@ -192,12 +163,6 @@ tap.test(`creates snapshot file and passes when it doesn't exist`, (t) => {
 
     tapshot(tMock, {mockData: "this is updated fake data"})
 
-    t.ok(proxies['import-fresh'].calledOnce)
-    t.ok(proxies['import-fresh'].calledWith(`${__dirname}/snapshots/files.js.snap`));
-
-    t.ok(proxies.fs.accessSync.calledOnce)
-    t.ok(proxies.fs.accessSync.calledWith(`${__dirname}/snapshots`));
-
     t.ok(proxies.fs.writeFileSync.calledOnce)
     t.ok(proxies.fs.writeFileSync.calledWith(`${__dirname}/snapshots/files.js.snap`, updateFixtureCode));
 
@@ -206,5 +171,8 @@ tap.test(`creates snapshot file and passes when it doesn't exist`, (t) => {
     t.ok(tMock.equal.notCalled);
     t.ok(tMock.pass.calledOnce);
     t.ok(tMock.pass.calledWith(`Snapshot for pass has been updated`));
+
+    process.env.UPDATE_SNAPSHOTS = undefined;
+
     t.end();
 });
