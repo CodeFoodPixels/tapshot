@@ -9,9 +9,13 @@ const prettyFormat = require(`pretty-format`);
 const importFresh = require(`import-fresh`);
 
 class tapshot {
-    constructor({file, update} = {}) {
-        this.file = file;
-        this.update = update;
+    constructor(options = {}) {
+        if (!isPlainObj(options)) {
+            throw `options must be an object`
+        }
+
+        this.file = options.file;
+        this.update = options.update;
 
         return this.tapshot.bind(this);
     }
