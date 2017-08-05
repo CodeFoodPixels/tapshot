@@ -65,7 +65,7 @@ This will update the snapshots for any tests that use that instance.
 const tap = require(`tap`);
 const tapshot = require(`tapshot`);
 
-tap.test(`Generated code is as expected` (t) => {
+tap.test(`Generated code is as expected`, (t) => {
     tapshot(t, `console.log('this is a string of text')`);
     t.end();
 });
@@ -75,7 +75,7 @@ tap.test(`Generated code is as expected` (t) => {
 const tap = require(`tap`);
 const tapshot = require(`tapshot`);
 
-tap.test(`Generated code is as expected` (t) => {
+tap.test(`Generated code is as expected`, (t) => {
     tapshot(t, `console.log('this is a string of text')`, {name: 'generated-code'});
     t.end();
 });
@@ -85,7 +85,7 @@ tap.test(`Generated code is as expected` (t) => {
 const tap = require(`tap`);
 const tapshot = require(`tapshot`).configure({update: true});
 
-tap.test(`Generated code is as expected` (t) => {
+tap.test(`Generated code is as expected`, (t) => {
     tapshot(t, `console.log('this is a string of text')`);
     t.end();
 });
