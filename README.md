@@ -12,7 +12,7 @@ $ npm install --save-dev tapshot
 ```
 
 ## Usage
-Tapshot will automatically create snapshot files and pass the test if they do not already exist. Similarly if you add a new test, the snapshot will be added to the file and the test will pass.
+As of V2, tapshot will not automatically add new snapshots or snapshot files. You'll need to pass the 'update' option to save them. See [Updating Snapshots](#updating-snapshots) for how to do this.
 
 ### API
 
@@ -33,15 +33,6 @@ This will return a tapshot instance that is configured to use the options passed
 
 ### Updating Snapshots
 If you change the structure of the object being snapshotted, you will need to update your snapshots. There are 3 ways to do this:
-
-#### `UPDATE_SNAPSHOTS` Environment Variable
-Set the `UPDATE_SNAPSHOTS` environment variable before running the tests. In the case of `tap test/*.js` being the test command, you can do it like so:
-
-```
-$ UPDATE_SNAPSHOTS=true tap test/*.js
-```
-
-Be warned that this will update all of your snapshots, so any snapshot tests that are failing due to unwanted breakages will now pass.
 
 #### `update` Option
 Set the `update` option when calling tapshot. Like so:

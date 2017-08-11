@@ -10,7 +10,7 @@ const prettyFormat = require(`pretty-format`);
 class tapshot {
     constructor(options = {}) {
         if (!isPlainObj(options)) {
-            throw `options must be an object`
+            throw new Error(`options must be an object`);
         }
 
         this.file = options.file;
@@ -21,16 +21,16 @@ class tapshot {
 
     tapshot (tap, found, options = {}) {
         if (typeof tap !== `object` && typeof tap !== `function`) {
-            throw `tap must either be an object or a function`
+            throw new Error(`tap must either be an object or a function`);
         }
         if (typeof tap.equal !== `function`) {
-            throw `tap must have the 'equal' assertion method`
+            throw new Error(`tap must have the 'equal' assertion method`);
         }
         if (typeof tap.pass !== `function`) {
-            throw `tap must have the 'pass' assertion method`
+            throw new Error(`tap must have the 'pass' assertion method`);
         }
         if (!isPlainObj(options)) {
-            throw `options must be an object`
+            throw new Error(`options must be an object`);
         }
 
         const name = options.name || tap.name;
@@ -38,7 +38,7 @@ class tapshot {
         const file = `${path.dirname(callee)}/${(options.file || this.file || `snapshots/${path.basename(callee)}.snap`)}`;
 
         if (typeof name !== `string` || name.length === 0) {
-            throw `No name provided, either use this within a named test or set options.name`
+            throw new Error(`No name provided, either use this within a named test or set options.name`);
         }
 
         let serializedFound;
@@ -46,18 +46,18 @@ class tapshot {
         if (options.serializer) {
             if (typeof options.serializer === `string`) {
                 if (found[options.serializer] && typeof found[options.serializer] !== `function`) {
-                    throw `Method '${options.serializer}' does not exist on provided object`
+                    throw new Error(`Method '${options.serializer}' does not exist on provided object`);
                 }
 
                 serializedFound = found[options.serializer]();
             } else if (typeof options.serializer === `function`) {
                 serializedFound = options.serializer(found);
             } else {
-                throw `Serializer provided to options.serializer must be a funtion or a string with the name of the serializer to be called on the object`;
+                throw new Error(`Serializer provided to options.serializer must be a funtion or a string with the name of the serializer to be called on the object`);
             }
 
             if (typeof serializedFound !== `string`) {
-                throw `Serializer provided to options.serializer must produce a string`
+                throw new Error(`Serializer provided to options.serializer must produce a string`);
             }
         } else {
             serializedFound = prettyFormat(found);
@@ -68,24 +68,23 @@ class tapshot {
         try {
             snapshots = this.loadSnapshot(file);
         } catch (err) {
-            if (err.code === 'ENOENT') {
-                this.saveSnapshot({[name]: serializedFound}, file);
-
-                return tap.pass(`Snapshot file did not exist. Created it at ${file}`);
+            if (err.code !== `ENOENT`) {
+                throw new Error(`Error when loading and parsing the snapshot file at '${file}'. Error given: ${err}`);
             }
 
-            throw `Error when loading and parsing the snapshot file at '${file}'. Error given: ${err}`
+            if (!options.update && !this.update) {
+                throw new Error(`The snapshot file '${file}' does not exist, which means the snapshot is probably new. Run the test with the 'update' flag passed to save the snapshot.`);
+            }
         }
 
-        if (!snapshots[name]) {
-            snapshots[name] = serializedFound;
-
-            this.saveSnapshot(snapshots, file);
-
-            return tap.pass(`Snapshot for ${name} did not exist in the file '${file}'. It has been added.`);
+        if (snapshots && !snapshots[name] && !options.update && !this.update) {
+            throw new Error(`The snapshot for '${name}' does not exist in the file '${file}', which means the snapshot is probably new. Run the test with the 'update' flag passed to save the snapshot.`);
         }
 
-        if (process.env.UPDATE_SNAPSHOTS || options.update || this.update) {
+        if (options.update || this.update) {
+            if (!snapshots) {
+                snapshots = {};
+            }
             snapshots[name] = serializedFound;
 
             this.saveSnapshot(snapshots, file);
@@ -103,7 +102,7 @@ class tapshot {
 
         const snapshotData = fs.readFileSync(file, `utf8`);
 
-        const build = new Function('module', snapshotData);
+        const build = new Function(`module`, snapshotData);
 
         build(snapshot);
 
@@ -126,7 +125,7 @@ class tapshot {
 
             fs.writeFileSync(file, data);
         } catch (err) {
-            throw `Error when trying to save the snapshot. Error given: ${err}`
+            throw new Error(`Error when trying to save the snapshot. Error given: ${err}`);
         }
 
     }
