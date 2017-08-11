@@ -5,14 +5,14 @@ const proxyquire = require(`proxyquire`);
 const fs = require(`fs`);
 const sinon = require(`sinon`);
 
-const fixture = require(`${__dirname}/fixtures/basic.js`);
+const fixture = fs.readFileSync(`${__dirname}/fixtures/basic.js`, `utf8`);
 const updateFixtureCode = fs.readFileSync(`${__dirname}/fixtures/update.js`, `utf8`);
 
 const proxies = {
-    'import-fresh': sinon.stub().returns((() => { return Object.assign({}, fixture)})()),
     fs: {
         writeFileSync: sinon.stub(),
         accessSync: sinon.stub(),
+        readFileSync: sinon.stub().returns(fixture)
     },
     mkdirp: {
         sync: sinon.stub()
@@ -22,7 +22,7 @@ const proxies = {
 const tapshot = proxyquire(`../index.js`, proxies);
 
 tap.beforeEach((done) => {
-    proxies['import-fresh'].resetHistory();
+    proxies.fs.readFileSync.resetHistory();
     proxies.fs.writeFileSync.reset();
 
     done();
@@ -59,7 +59,7 @@ tap.test(`runs when file is overridden in configure`, (t) => {
 
     instance(tMock, {mockData: "this is fake data"});
 
-    t.ok(proxies['import-fresh'].calledWith(`${__dirname}/snapshots/badger.snap`));
+    t.ok(proxies.fs.readFileSync.calledWith(`${__dirname}/snapshots/badger.snap`));
     t.ok(tMock.equal.calledOnce);
     t.ok(tMock.pass.notCalled);
 

@@ -6,7 +6,6 @@ const callsites = require(`callsites`);
 const isPlainObj = require(`is-plain-obj`);
 const mkdirp = require(`mkdirp`);
 const prettyFormat = require(`pretty-format`);
-const importFresh = require(`import-fresh`);
 
 class tapshot {
     constructor(options = {}) {
@@ -67,9 +66,9 @@ class tapshot {
         let snapshots;
 
         try {
-            snapshots = importFresh(file);
+            snapshots = this.loadSnapshot(file);
         } catch (err) {
-            if (err.code === 'MODULE_NOT_FOUND') {
+            if (err.code === 'ENOENT') {
                 this.saveSnapshot({[name]: serializedFound}, file);
 
                 return tap.pass(`Snapshot file did not exist. Created it at ${file}`);
@@ -95,6 +94,20 @@ class tapshot {
         }
 
         tap.equal(serializedFound, snapshots[name], `Snapshot does not match for ${name}`);
+    }
+
+    loadSnapshot(file) {
+        const snapshot = {
+            exports: Object.create(null)
+        };
+
+        const snapshotData = fs.readFileSync(file, `utf8`);
+
+        const build = new Function('module', snapshotData);
+
+        build(snapshot);
+
+        return snapshot.exports;
     }
 
     saveSnapshot(data, file) {

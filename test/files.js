@@ -5,8 +5,7 @@ const proxyquire = require(`proxyquire`);
 const fs = require(`fs`);
 const sinon = require(`sinon`);
 
-const fixture = require(`${__dirname}/fixtures/basic.js`);
-const fixtureCode = fs.readFileSync(`${__dirname}/fixtures/basic.js`, `utf8`);
+const fixture = fs.readFileSync(`${__dirname}/fixtures/basic.js`, `utf8`);
 
 const addFixtureCode = fs.readFileSync(`${__dirname}/fixtures/addSnapshot.js`, `utf8`);
 const saveFailFixtureCode = fs.readFileSync(`${__dirname}/fixtures/saveFail.js`, `utf8`);
@@ -16,18 +15,18 @@ const proxies = {
     fs: {
         writeFileSync: sinon.stub(),
         accessSync: sinon.stub(),
+        readFileSync: sinon.stub()
     },
     mkdirp: {
         sync: sinon.stub()
-    },
-    'import-fresh': sinon.stub()
+    }
 }
 
 const tapshot = proxyquire(`../index.js`, proxies);
 
 tap.beforeEach((done) => {
-    proxies['import-fresh'].reset();
-    proxies['import-fresh'].returns(Object.assign({}, fixture));
+    proxies.fs.readFileSync.reset();
+    proxies.fs.readFileSync.returns(fixture);
 
     proxies.fs.accessSync.reset();
 
@@ -45,12 +44,12 @@ tap.test(`creates snapshot file and passes when it doesn't exist`, (t) => {
         pass: sinon.spy()
     };
 
-    proxies['import-fresh'].throws({code: `MODULE_NOT_FOUND`});
+    proxies.fs.readFileSync.throws({code: `ENOENT`});
 
     tapshot(tMock, {mockData: "this is fake data"})
 
     t.ok(proxies.fs.writeFileSync.calledOnce)
-    t.ok(proxies.fs.writeFileSync.calledWith(`${__dirname}/snapshots/files.js.snap`, fixtureCode));
+    t.ok(proxies.fs.writeFileSync.calledWith(`${__dirname}/snapshots/files.js.snap`, fixture));
 
     t.ok(proxies.mkdirp.sync.notCalled)
 
@@ -68,13 +67,13 @@ tap.test(`creates snapshot file, directories and passes when they don't exist`, 
         pass: sinon.spy()
     };
 
-    proxies['import-fresh'].throws({code: `MODULE_NOT_FOUND`});
+    proxies.fs.readFileSync.throws({code: `ENOENT`});
     proxies.fs.accessSync.throws(`nope`);
 
     tapshot(tMock, {mockData: "this is fake data"})
 
     t.ok(proxies.fs.writeFileSync.calledOnce)
-    t.ok(proxies.fs.writeFileSync.calledWith(`${__dirname}/snapshots/files.js.snap`, fixtureCode));
+    t.ok(proxies.fs.writeFileSync.calledWith(`${__dirname}/snapshots/files.js.snap`, fixture));
 
     t.ok(proxies.mkdirp.sync.calledOnce);
     t.ok(proxies.mkdirp.sync.calledWith(`${__dirname}/snapshots`));
@@ -112,7 +111,7 @@ tap.test(`throws if there's an error in the snapshot`, (t) => {
         pass: sinon.spy()
     };
 
-    proxies['import-fresh'].throws(`error!`);
+    proxies.fs.readFileSync.throws(`error!`);
 
     t.throws(
         () => {
