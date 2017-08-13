@@ -1,10 +1,10 @@
 # tapshot
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/lukeb-uk/tapshot.svg)](https://greenkeeper.io/)
-
-[![Build Status](https://travis-ci.org/lukeb-uk/tapshot.svg?branch=master)](https://travis-ci.org/lukeb-uk/tapshot)
+[![Greenkeeper badge](https://badges.greenkeeper.io/lukeb-uk/tapshot.svg)](https://greenkeeper.io/) [![Build Status](https://travis-ci.org/lukeb-uk/tapshot.svg?branch=master)](https://travis-ci.org/lukeb-uk/tapshot)
 
 Tapshot is a helper module for snapshot testing when you are using tools like [tap](https://www.npmjs.com/package/tap) and [tape](https://www.npmjs.com/package/tape). Tapshot can be used to test any serializable object.
+
+![tapshot](https://cdn.rawgit.com/lukeb-uk/tapshot/88ddd4ff/tapshot.png)
 
 ## Install
 ```
