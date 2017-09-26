@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "proxyquire": "^1.8.0",
-    "sinon": "^3.1.0",
+    "sinon": "^4.0.0",
     "tap": "^10.3.4"
   }
 }
