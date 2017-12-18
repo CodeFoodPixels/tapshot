@@ -20,7 +20,7 @@
     "callsites": "^2.0.0",
     "is-plain-obj": "^1.1.0",
     "mkdirp": "^0.5.1",
-    "pretty-format": "^21.2.0"
+    "pretty-format": "^22.0.0"
   },
   "devDependencies": {
     "proxyquire": "^1.8.0",
