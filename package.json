@@ -23,7 +23,7 @@
     "pretty-format": "^22.4.0"
   },
   "devDependencies": {
-    "proxyquire": "^1.8.0",
+    "proxyquire": "^2.0.1",
     "sinon": "^4.0.0",
     "tap": "^11.1.1"
   }
