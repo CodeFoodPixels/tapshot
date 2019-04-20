@@ -18,7 +18,7 @@
   "homepage": "https://github.com/lukeb-uk/tapshot#readme",
   "dependencies": {
     "callsites": "^2.0.0",
-    "is-plain-obj": "^1.1.0",
+    "is-plain-obj": "^2.0.0",
     "mkdirp": "^0.5.1",
     "pretty-format": "^23.0.1"
   },
